@@ -2,13 +2,17 @@
   "name": "flick-challenge",
   "version": "1.0.0",
   "scripts": {
+    "predev": "docker-compose up -d",
     "dev": "blitz dev",
     "build": "blitz build",
     "start": "blitz start",
+    "migrate:dev": "blitz prisma migrate dev",
+    "migrate:deploy": "blitz prisma migrate deploy",
     "studio": "blitz prisma studio",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx .",
     "test": "jest",
     "test:watch": "jest --watch",
+    "typecheck": "tsc --noEmit",
     "prepare": "husky install"
   },
   "prisma": {
