@@ -1,6 +1,6 @@
 import { hash256, Ctx } from "blitz"
 import forgotPassword from "./forgotPassword"
-import db from "db"
+import db, { TokenType } from "db"
 import previewEmail from "preview-email"
 
 beforeEach(async () => {
@@ -27,7 +27,7 @@ describe("forgotPassword mutation", () => {
         tokens: {
           // Create old token to ensure it's deleted
           create: {
-            type: "RESET_PASSWORD",
+            type: TokenType.RESET_PASSWORD,
             hashedToken: "token",
             expiresAt: new Date(),
             sentTo: "user@example.com",
@@ -49,7 +49,7 @@ describe("forgotPassword mutation", () => {
     expect(tokens.length).toBe(1)
 
     expect(token.id).not.toBe(user.tokens[0].id)
-    expect(token.type).toBe("RESET_PASSWORD")
+    expect(token.type).toBe(TokenType.RESET_PASSWORD)
     expect(token.sentTo).toBe(user.email)
     expect(token.hashedToken).toBe(hash256(generatedToken))
     expect(token.expiresAt > new Date()).toBe(true)

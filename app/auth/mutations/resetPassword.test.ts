@@ -1,5 +1,5 @@
 import resetPassword from "./resetPassword"
-import db from "db"
+import db, { TokenType } from "db"
 import { hash256, SecurePassword } from "blitz"
 
 beforeEach(async () => {
@@ -31,13 +31,13 @@ describe("resetPassword mutation", () => {
           // Create old token to ensure it's deleted
           create: [
             {
-              type: "RESET_PASSWORD",
+              type: TokenType.RESET_PASSWORD,
               hashedToken: hash256(expiredToken),
               expiresAt: past,
               sentTo: "user@example.com",
             },
             {
-              type: "RESET_PASSWORD",
+              type: TokenType.RESET_PASSWORD,
               hashedToken: hash256(goodToken),
               expiresAt: future,
               sentTo: "user@example.com",

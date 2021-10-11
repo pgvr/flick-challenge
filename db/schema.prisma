@@ -19,10 +19,16 @@ model User {
   name           String?
   email          String   @unique
   hashedPassword String?
-  role           String   @default("USER")
+  role           UserRole @default(CUSTOMER)
 
-  tokens   Token[]
-  sessions Session[]
+  tokens      Token[]
+  sessions    Session[]
+  memberships Membership[]
+}
+
+enum UserRole {
+  CUSTOMER
+  SUPERADMIN
 }
 
 model Session {
@@ -52,9 +58,59 @@ model Token {
   user   User   @relation(fields: [userId], references: [id])
   userId String
 
+  workspace   Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId String?
   @@unique([hashedToken, type])
 }
 
 enum TokenType {
   RESET_PASSWORD
+  INVITE_TOKEN
+}
+
+model Workspace {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+  slug String @unique
+
+  memberships Membership[]
+
+  tokens Token[]
+}
+
+enum MembershipRole {
+  OWNER
+  ADMIN
+  USER
+}
+
+model Membership {
+  id   String         @id @default(cuid())
+  role MembershipRole
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  notes  Note[]
+  @@unique([userId, workspaceId])
+}
+
+model Note {
+  id String @id @default(cuid())
+
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // membership contains the authors user id and workspace the note belongs in
+  membership   Membership @relation(fields: [membershipId], references: [id])
+  membershipId String
 }
